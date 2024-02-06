@@ -10,9 +10,9 @@ namespace CSluokkaharjoitus
     class Hooman
     {
         // Define properties of Hooman ie. fields
-        string name ="Essi Esimerkki";
-        int age = 30;
-        string gender = "Emäntä";
+        public string name = "Essi Esimerkki";
+        public int age = 30;
+        public string gender = "Emäntä";
 
         // Constructor with zero arguments (default constructor w/o args)
         // No needed to define, will be created automatically
@@ -60,8 +60,13 @@ namespace CSluokkaharjoitus
             // call the SayOpinion method
             owner.SayOpinion();
 
+            String who = owner.name;
+
+            Console.WriteLine("Totesi " + who);
+
             // keep the window open until Enter pressed
             Console.ReadLine();
+
         }
     }
 }

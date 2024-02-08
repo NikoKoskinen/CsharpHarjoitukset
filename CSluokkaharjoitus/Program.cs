@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CSluokkaharjoitus
+    // Super/Base/Parent class definition
 {
     class Hooman
     {
@@ -18,6 +19,13 @@ namespace CSluokkaharjoitus
         // No needed to define, will be created automatically
         public Hooman()
         {
+
+        }
+
+        // A method to say something
+        public void SayOpinion()
+        {
+            Console.WriteLine("Perkeleen humppi");
 
         }
 
@@ -41,15 +49,23 @@ namespace CSluokkaharjoitus
             this.age = age;
             this.gender = gender;
         }
-
-        // A method to say something
-        public void SayOpinion()
+    }
+    class Pet
+    {
+        public virtual void Eats()
         {
-            Console.WriteLine("Perkeleen humppi");
-
+            Console.WriteLine("Syö ruokaa");
+        }
+    }
+    class Hare : Pet
+    {
+        public override void Eats()
+        {
+            Console.WriteLine("syö porkkanoita");
         }
     }
 
+    // Sub/Devired/Child class inherits Hooman class
     class CatOwner : Hooman
     {
         public new void SayOpinion()
@@ -61,8 +77,12 @@ namespace CSluokkaharjoitus
     class DogOwner : Hooman
 
     {
-
+        public new void SayOpinion()
+        {
+            Console.WriteLine("Koira on uskollinen ja luotettava kumppani, ihmisen paras ystävä");
+        }
     }
+
 
     internal class Program
     {
@@ -83,6 +103,17 @@ namespace CSluokkaharjoitus
 
             // Use catowners SayOpinion method
             catOwner.SayOpinion();
+
+            // Create a new dog owner and call SayOpinion method
+            DogOwner dogOwner = new DogOwner();
+            dogOwner.SayOpinion();
+
+            // create new pet and call Eats method
+            Pet pet = new Pet();
+            pet.Eats();
+
+            Hare hare = new Hare();
+            hare.Eats();
 
             // keep the window open until Enter pressed
             Console.ReadLine();

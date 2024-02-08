@@ -50,6 +50,20 @@ namespace CSluokkaharjoitus
         }
     }
 
+    class CatOwner : Hooman
+    {
+        public new void SayOpinion()
+        {
+            Console.WriteLine("Kissat ovat itsenäisiä ja V-päitä");
+        }
+    }
+
+    class DogOwner : Hooman
+
+    {
+
+    }
+
     internal class Program
     {
         static void Main(string[] args)
@@ -63,6 +77,12 @@ namespace CSluokkaharjoitus
             String who = owner.name;
 
             Console.WriteLine("Totesi " + who);
+
+            // Create a new catowner object
+            CatOwner catOwner = new CatOwner();
+
+            // Use catowners SayOpinion method
+            catOwner.SayOpinion();
 
             // keep the window open until Enter pressed
             Console.ReadLine();

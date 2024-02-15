@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,7 +47,7 @@ namespace Laiterekisteri
         // Defaul Constructor
         public Device()
         {
-
+          
         }
 
         //Constructor with one argument
@@ -68,12 +69,44 @@ namespace Laiterekisteri
     }
     class Computer : Device
     {
+        // fields & properties
+        string processorType;
+        public string ProcessorType 
+        {   
+            get { return processorType; } 
+            set {  processorType = value; } 
+        }
+        int ram;
+        public int Ram 
+        {   
+            get { return ram; } 
+            set {  ram = value; }
+        }
+        int storage;
+        public int Storage 
+        { 
+            get { return storage; } 
+            set {  storage = value; }
+        }
+        // constructor
+        public Computer() : base() 
+        {}
+
+        public Computer(string identity) : base(identity) 
+        {}
+
+        // Other methods
         
     }
 
     class Smartphone : Device
     {
-        
+        // fields & properties
+
+        // constructor
+
+        // other methods
+
     }
 
     class Tablet : Device
@@ -99,7 +132,19 @@ namespace Laiterekisteri
             Console.WriteLine(device3.Identity);
             Console.WriteLine(device3.Price);
            
+            // let's create computer witch inherits device class properties & methods
+        Computer computer1 = new Computer();
 
+            // let´s set processor properties
+            computer1.ProcessorType = "intel I7 ";
+            computer1.Ram = 16;
+
+            Console.WriteLine("New computer name is " + computer1.Identity + " and there is " + computer1.ProcessorType + 
+                " Prosessori ja " + computer1.Ram + " Gb keskusmuistia");
+            // luodaan uusi tietokone toisella konstruktorilla
+            Computer computer2 = new Computer("Niko läppäri");
+            computer2.ProcessorType = "Ryzen 7 5000series";
+            computer2.Ram = 32;
 
 
             Console.ReadLine();

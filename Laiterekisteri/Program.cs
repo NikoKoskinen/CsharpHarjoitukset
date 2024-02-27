@@ -93,6 +93,8 @@ namespace Laiterekisteri
         public void ShowDetailsInfo()
         {
             // luetaan laiteen ostotiedot sen kentistä, HUOM! (this)
+            Console.WriteLine("Laitteiston osto tiedot");
+            Console.WriteLine("--------------------");
             Console.WriteLine("Laitteen nimi: " + this.identity);
             Console.WriteLine("Ostopäivä: " + this.dateBought);
             Console.WriteLine("Takuu aika: " + this.warranty + " kk");
@@ -102,6 +104,8 @@ namespace Laiterekisteri
         // ----------------------------------------------------------------------------
         public void ShowInfo()
         {
+            Console.WriteLine("Laitteiston tekniset tiedot");
+            Console.WriteLine("--------------------");
             Console.WriteLine("koneen nimi: " + Identity);
             Console.WriteLine("Prosessori: " + processorType);
             Console.WriteLine("Keskusmuistin määrä: " + ram);
@@ -203,21 +207,57 @@ namespace Laiterekisteri
                 switch (type)
                 {
                     case "1":
+
+                        // kysytään käyttäjältä tietoja laitteistoita ja luodaan uusi tietokone olio
                         Console.WriteLine("Nimi: ");
                         string computerName = Console.ReadLine();
-                        Computer computer = new Computer();
+                        Computer computer = new Computer(computerName);
+                        Console.Write("Ostopäivä: ");
+                        computer.DateBought = Console.ReadLine();
+                        Console.Write("Hankinta hinta: ");
+                        string price = Console.ReadLine();
+
+                        try
+                        {
+                            computer.Price = double.Parse(price);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Virheellinen hintatieto" + ex.Message);
+                        }
+
+                        Console.Write("Takuuaika kuukausina: ");
+                        computer.Warranty = int.Parse(Console.ReadLine());
+                        Console.Write("Prosessori tyyppi: ");
+                        computer.ProcessorType = Console.ReadLine();
+                        Console.Write("Muistin määrä (GB): ");
+                        computer.Ram = int.Parse(Console.ReadLine());
+                        Console.Write("Tallennus kapasiteetti (GB): ");
+                        computer.Storage = int.Parse(Console.ReadLine());
+
+                        // näytetään olion tiedot metodien avulla
+                        computer.ShowDetailsInfo();
+                        computer.ShowInfo();
                         break;
 
                     case "2":
                         Console.WriteLine("Nimi: ");
                         string tabletName = Console.ReadLine();
-                        Tablet tablet = new Tablet();
+                        Tablet tablet = new Tablet(tabletName);
+                        Console.Write("Käyttöjärjestelmä: ");
+                        tablet.OperatingSystem = Console.ReadLine();
+                        Console.Write("Kynätuki: ");
+                        tablet.StylusEnabled = bool.Parse(Console.ReadLine());
+
                         break;
 
                     case "3":
                         Console.WriteLine("Nimi: ");
                         string smartphoneName = Console.ReadLine();
-                        Smartphone smartphone = new Smartphone();
+                        Smartphone smartphone = new Smartphone(smartphoneName);
+                        Console.Write("Käyttöjärjestelmä: ");
+                        smartphone.OperatingSystem = Console.ReadLine();
+
                         break;
 
                     default:

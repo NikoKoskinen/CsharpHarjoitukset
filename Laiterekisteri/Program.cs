@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -176,6 +177,11 @@ namespace Laiterekisteri
         public Smartphone(string identity) : base(identity)
         { }
         // other methods
+        public void PhoneInfo()
+        {
+            Console.WriteLine("Käyttöjärjestelmä: " + OperatingSystem);
+            Console.WriteLine();
+        }
 
     }
 
@@ -186,48 +192,55 @@ namespace Laiterekisteri
     {
         static void Main(string[] args)
         {
-            // let's create computer witch inherits device class properties & methods
-            //=======================================================================
-        Computer computer1 = new Computer();
+            // Ikuinen silmukka pääohjelman käynnissä pitämiseen
+            while (true)
+            {
+                Console.WriteLine("Minkä laitteen tiedot tallentaan?");
+                Console.Write("1 tietokone, 2 tabletti, 3 puhelin ");
+                string type = Console.ReadLine();
 
-            // let´s set processor properties
-            // ----------------------------------------------------------------------
-            computer1.ProcessorType = "intel I7 ";
-            computer1.Ram = 16;
-            computer1.DateBought = "13.2.2024";
-            computer1.Price = 1999.00d;
-            computer1.Warranty = 24;
+                // Luodaan Switch-case-rakenne vaihtoehdoille
+                switch (type)
+                {
+                    case "1":
+                        Console.WriteLine("Nimi: ");
+                        string computerName = Console.ReadLine();
+                        Computer computer = new Computer();
+                        break;
 
-            Console.WriteLine("Tietokone 1:n hankintatiedot");
-            Console.WriteLine("----------------------------");
-            computer1.ShowDetailsInfo();
+                    case "2":
+                        Console.WriteLine("Nimi: ");
+                        string tabletName = Console.ReadLine();
+                        Tablet tablet = new Tablet();
+                        break;
+
+                    case "3":
+                        Console.WriteLine("Nimi: ");
+                        string smartphoneName = Console.ReadLine();
+                        Smartphone smartphone = new Smartphone();
+                        break;
+
+                    default:
+                        Console.WriteLine("Virheellinen valinta, anna pelkkä numero");
+                        break;
+                }
+
+                // Ohjelman sulkeminen: poistutaan ikuisesta silmukasta
+                Console.WriteLine("Haluatko jatkaa K/e");
+                string continueAnswer = Console.ReadLine();
+                continueAnswer = continueAnswer.Trim();
+                continueAnswer = continueAnswer.ToLower();
+
+                if (continueAnswer == "e")
+                {
+                    break;
+                }
+            }
 
 
-            // luodaan uusi tietokone toisella konstruktorilla
-            Computer computer2 = new Computer("Niko läppäri");
-            computer2.ProcessorType = "Ryzen 7 5000series";
-            computer2.Ram = 32;
-            Console.WriteLine("Tietokone 2:n hankintatiedot");
-            Console.WriteLine("----------------------------");
-            computer2.ShowDetailsInfo();
-
-            // luodaan uusi tabletti
-            Tablet tablet1 = new Tablet("Nikon iPad");
-            tablet1.DateBought = "10.10.2022";
-            tablet1.OperatingSystem = "IOS 17.2";
-            tablet1.StylusEnabled = true;
-
-            // näytetään tietoja metodien avulla
-            Console.WriteLine("tabletti 1:n tekniset tiedot");
-            Console.WriteLine("----------------------------");
-            tablet1.ShowDetailsInfo();
-            tablet1.TabletInfo();
-            
 
 
-
-
-
+            // pidetään ikkuna auki
             Console.ReadLine();
         }
     }

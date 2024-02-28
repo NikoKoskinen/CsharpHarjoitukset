@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -13,13 +14,18 @@ namespace Laiterekisteri
     // =========================================================================
     class Device
     {
-        //Fields
-        //----------------------------------------------------------------------
+        // Purchase Fields
+        // ----------------------------------------------------------------------
         string identity = "uusi laite";
         string dateBought = "1.1.2000";
         double price = 0.00d;
         int warranty = 12;
 
+        // Tech fields
+        // ---------------------------------------------------------------------
+        int ram = 0;
+        int storage = 0;
+        string processorType = "N/A";
 
         //Properties
         //----------------------------------------------------------------------
@@ -46,19 +52,19 @@ namespace Laiterekisteri
             get { return warranty; }
             set { warranty = value; }
         }
-        int ram = 0;
+      
         public int Ram
         {
             get { return ram; }
             set { ram = value; }
         }
-        int storage = 0;
+       
         public int Storage
         {
             get { return storage; }
             set { storage = value; }
         }
-        string processorType;
+        
         public string ProcessorType
         {
             get { return processorType; }
@@ -90,7 +96,7 @@ namespace Laiterekisteri
 
         // yliluokan metodit
         // ----------------------------------------------------------------------------
-        public void ShowDetailsInfo()
+        public void ShowBoughtInfo()
         {
             // luetaan laiteen ostotiedot sen kentistä, HUOM! (this)
             Console.WriteLine("Laitteiston osto tiedot");
@@ -102,7 +108,7 @@ namespace Laiterekisteri
         }
         // Luetaan laitteen yleiset tekniset tiedot
         // ----------------------------------------------------------------------------
-        public void ShowInfo()
+        public void ShowTechInfo()
         {
             Console.WriteLine("Laitteiston tekniset tiedot");
             Console.WriteLine("--------------------");
@@ -112,7 +118,25 @@ namespace Laiterekisteri
             Console.WriteLine("Levy tila: " + storage);
 
         }
+
+        // Lasketaan takuun päättymispäivä, huomaa ISO-standardin mukaiset päivämäärät: vuosi-kuukausi-päivä
+        public void CalculateWarrantyEndingDate()
+        {
+            // Muutetaan päivämäärä merkkijono päivämäärä-kellonaika-muotoon
+            DateTime startDate = DateTime.ParseExact(this.dateBought, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+
+            // Lisätään takuun kesto
+            DateTime endDate = startDate.AddMonths(this.Warranty);
+
+
+            // Muunnetaan päivämäärä ISO-standardin mukaiseen muotoon
+            endDate = endDate.Date;
+            string isoDate = endDate.ToString("yyyy-MM-dd");
+            Console.WriteLine("Takuu päättyy: " + isoDate);
+        }
     }
+
     // tietokone luokka
     // ===============================================================================
     class Computer : Device
@@ -136,13 +160,14 @@ namespace Laiterekisteri
         // fields & properties
         // ---------------------------------------------------------------------------
         string operatingSystem;
+        bool stylusEnabled = false;
+
         public string OperatingSystem
         {
             get { return operatingSystem; }
             set { operatingSystem = value; }
         }
 
-        bool stylusEnabled = false;
         public bool StylusEnabled
         {
             get { return stylusEnabled; }
@@ -160,8 +185,11 @@ namespace Laiterekisteri
         // ---------------------------------------------------------------------------
         public void TabletInfo()
         {
+            Console.WriteLine();
+            Console.WriteLine("Tabletin erityitiedot");
+            Console.WriteLine("---------------------");
             Console.WriteLine("Käyttöjärjestelmä: " + OperatingSystem);
-            Console.WriteLine("Kynätuki: " + stylusEnabled);
+            Console.WriteLine("Kynätuki: " + StylusEnabled);
         }
 
     }
@@ -169,12 +197,17 @@ namespace Laiterekisteri
     class Smartphone : Device
     {
         // fields & properties
+        // ---------------------------------------------------------------------------
         string operatingSystem;
+        int ram = 0;
+        int storage = 0;
+        string processorType = "N/A";
         public string OperatingSystem
         {
             get { return operatingSystem; }
             set { operatingSystem = value; }
         }
+
         // constructor
         public Smartphone() : base()
         { }
@@ -183,19 +216,33 @@ namespace Laiterekisteri
         // other methods
         public void PhoneInfo()
         {
-            Console.WriteLine("Käyttöjärjestelmä: " + OperatingSystem);
             Console.WriteLine();
+            Console.WriteLine("Puhelimen erityistiedot");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Käyttöjärjestelmä: " + OperatingSystem);
+            Console.WriteLine("Muistin määrä(GB): " + ram);
+            Console.WriteLine("Prosessori: " + processorType);
+            Console.WriteLine("Levytila: " + storage);
         }
 
     }
-
-
-
-
+    // Pääohjelman luokka, josta tulee Program.exe
+    // ===========================================
     class Program
     {
+        // Ohjelman käynnistävä metodi
+        // ---------------------------
         static void Main(string[] args)
         {
+            // Luodaan vektorit ja laskurit niiden alkioille
+            Computer[] computers = new Computer[10];
+            Tablet[] tablets = new Tablet[10];
+            int numberOfComputers = 0;
+            int numberOfTablets = 0;
+
+            // Vaihtoehtoisesti luodaan pinot laitteille
+            Stack<Computer> computerStack = new Stack<Computer>();
+
             // Ikuinen silmukka pääohjelman käynnissä pitämiseen
             while (true)
             {
@@ -212,7 +259,7 @@ namespace Laiterekisteri
                         Console.WriteLine("Nimi: ");
                         string computerName = Console.ReadLine();
                         Computer computer = new Computer(computerName);
-                        Console.Write("Ostopäivä: ");
+                        Console.Write("Ostopäivä muodossa vvvv-kk-pp: ");
                         computer.DateBought = Console.ReadLine();
                         Console.Write("Hankinta hinta: ");
                         string price = Console.ReadLine();
@@ -223,7 +270,8 @@ namespace Laiterekisteri
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Virheellinen hintatieto" + ex.Message);
+                            Console.WriteLine("Virheellinen hintatieto käytä desimaalipilkkua (,)" + ex.Message);
+                            break;
                         }
 
                         Console.Write("Takuuaika kuukausina: ");
@@ -235,20 +283,23 @@ namespace Laiterekisteri
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("" + ex.Message);
+                            Console.WriteLine("Virheellinen takuutieto, vain kuukausien määrä kokonaislukuna " + ex.Message);
+                            break;
                         }
 
                         Console.Write("Prosessori tyyppi: ");
                         computer.ProcessorType = Console.ReadLine();
                         Console.Write("Muistin määrä (GB): ");
                         string ram = Console.ReadLine();
+
                         try
                         {
                             computer.Ram = int.Parse(ram);
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("" + ex.Message);
+                            Console.WriteLine("Virheellinen muistin määrä, vain kokonaisluvut sallittu " + ex.Message);
+                            break;
                         }
 
                         Console.Write("Tallennus kapasiteetti (GB): ");
@@ -260,12 +311,32 @@ namespace Laiterekisteri
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("" + ex.Message);
+                            Console.WriteLine("Virheellinen tallennustilan koko, vain kokonaisluvut sallittu " + ex.Message);
+                            break;
                         }
 
                         // näytetään olion tiedot metodien avulla
-                        computer.ShowDetailsInfo();
-                        computer.ShowInfo();
+                        computer.ShowBoughtInfo();
+                        computer.ShowTechInfo();
+
+                        try
+                        {
+                            computer.CalculateWarrantyEndingDate();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Ostopäivä virheellinen " + ex.Message);
+                            break;
+                        }
+
+                        // Lisätään tietokone vektoriin
+                        computers[numberOfComputers] = computer;
+                        Console.WriteLine("Vektorin indeksi on nyt " + numberOfComputers);
+                        numberOfComputers++;
+                        Console.WriteLine("Nyt syötettiin " + numberOfComputers + ". kone");
+
+                        // Vaihtoehtoisesti lisätään tietokone pinoon
+                        computerStack.Push(computer);
                         break;
 
                     case "2":
@@ -294,7 +365,10 @@ namespace Laiterekisteri
                         Smartphone smartphone = new Smartphone(smartphoneName);
                         Console.Write("Käyttöjärjestelmä: ");
                         smartphone.OperatingSystem = Console.ReadLine();
-
+                        Console.Write("Prosessori tyyppi: ");
+                        smartphone.ProcessorType = Console.ReadLine();
+                        Console.Write("Muistin määrä (GB): ");
+                        
                         break;
 
                     default:
@@ -310,10 +384,13 @@ namespace Laiterekisteri
 
                 if (continueAnswer == "e")
                 {
+                    // Vektorissa on se määrä alkioita, jotka sille on alustuvaiheessa annettu
+                    Console.WriteLine("Tietokonevektorissa on " + computers.Length + " alkiota");
+
+                    Console.WriteLine("Pinossa on nyt " + computerStack.Count + " tietokonetta");
                     break;
                 }
             }
-
 
 
 

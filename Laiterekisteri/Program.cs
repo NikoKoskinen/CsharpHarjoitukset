@@ -69,7 +69,7 @@ namespace Laiterekisteri
         //----------------------------------------------------------------------------
         public Device()
         {
-          
+
         }
 
         //Constructor with one argument
@@ -80,12 +80,12 @@ namespace Laiterekisteri
         }
         //Constructor with all arguments
         // ----------------------------------------------------------------------------
-        public Device(string identity,string dateBought, double price, int warranty)
+        public Device(string identity, string dateBought, double price, int warranty)
         {
-            this.identity=identity;
-            this.dateBought=dateBought; 
+            this.identity = identity;
+            this.dateBought = dateBought;
             this.price = price;
-            this.warranty=warranty;
+            this.warranty = warranty;
         }
 
         // yliluokan metodit
@@ -118,17 +118,17 @@ namespace Laiterekisteri
     class Computer : Device
     {
         // fields & properties
-      
+
         // constructor
         // ---------------------------------------------------------------------------
-        public Computer() : base() 
-        {}
+        public Computer() : base()
+        { }
 
-        public Computer(string identity) : base(identity) 
-        {}
+        public Computer(string identity) : base(identity)
+        { }
 
         // Other methods
-       
+
     }
 
     class Tablet : Device
@@ -163,7 +163,7 @@ namespace Laiterekisteri
             Console.WriteLine("Käyttöjärjestelmä: " + OperatingSystem);
             Console.WriteLine("Kynätuki: " + stylusEnabled);
         }
-    
+
     }
 
     class Smartphone : Device
@@ -227,13 +227,41 @@ namespace Laiterekisteri
                         }
 
                         Console.Write("Takuuaika kuukausina: ");
-                        computer.Warranty = int.Parse(Console.ReadLine());
+                        string warranty = Console.ReadLine();
+
+                        try
+                        {
+                            computer.Warranty = int.Parse(warranty);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("" + ex.Message);
+                        }
+
                         Console.Write("Prosessori tyyppi: ");
                         computer.ProcessorType = Console.ReadLine();
                         Console.Write("Muistin määrä (GB): ");
-                        computer.Ram = int.Parse(Console.ReadLine());
+                        string ram = Console.ReadLine();
+                        try
+                        {
+                            computer.Ram = int.Parse(ram);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("" + ex.Message);
+                        }
+
                         Console.Write("Tallennus kapasiteetti (GB): ");
-                        computer.Storage = int.Parse(Console.ReadLine());
+                        string storage = Console.ReadLine();
+
+                        try
+                        {
+                            computer.Storage = int.Parse(storage);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("" + ex.Message);
+                        }
 
                         // näytetään olion tiedot metodien avulla
                         computer.ShowDetailsInfo();
@@ -247,7 +275,16 @@ namespace Laiterekisteri
                         Console.Write("Käyttöjärjestelmä: ");
                         tablet.OperatingSystem = Console.ReadLine();
                         Console.Write("Kynätuki: ");
-                        tablet.StylusEnabled = bool.Parse(Console.ReadLine());
+                        string stylysEnabled = Console.ReadLine();
+
+                        try
+                        {
+                            tablet.StylusEnabled = bool.Parse(stylysEnabled);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("" + ex.Message);
+                        }
 
                         break;
 

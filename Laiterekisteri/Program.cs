@@ -8,10 +8,17 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
+// Tiedostonkäsittelyyn ja serialisointiin tarvittavat kirjastot
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+
 namespace Laiterekisteri
 {
     // Base class for all devices
     // =========================================================================
+    // Muista määrittää serialisoitavaksi
+    [Serializable]
     class Device
     {
         // Purchase Fields
@@ -52,19 +59,19 @@ namespace Laiterekisteri
             get { return warranty; }
             set { warranty = value; }
         }
-      
+
         public int Ram
         {
             get { return ram; }
             set { ram = value; }
         }
-       
+
         public int Storage
         {
             get { return storage; }
             set { storage = value; }
         }
-        
+
         public string ProcessorType
         {
             get { return processorType; }
@@ -139,6 +146,8 @@ namespace Laiterekisteri
 
     // tietokone luokka
     // ===============================================================================
+
+    [Serializable]
     class Computer : Device
     {
         // fields & properties
@@ -154,7 +163,7 @@ namespace Laiterekisteri
         // Other methods
 
     }
-
+    [Serializable]
     class Tablet : Device
     {
         // fields & properties
@@ -193,7 +202,7 @@ namespace Laiterekisteri
         }
 
     }
-
+    [Serializable]
     class Smartphone : Device
     {
         // fields & properties
@@ -234,13 +243,13 @@ namespace Laiterekisteri
         // ---------------------------
         static void Main(string[] args)
         {
-            // Luodaan vektorit ja laskurit niiden alkioille
-            Computer[] computers = new Computer[10];
-            Tablet[] tablets = new Tablet[10];
-            int numberOfComputers = 0;
-            int numberOfTablets = 0;
+            // Määritellään binääridatan muodostaja serialisointia varte
+            IFormatter formatter = new BinaryFormatter();
 
-            // Vaihtoehtoisesti luodaan pinot laitteille
+            // määritellään toinen file stream tietokoneiden tietojen pinotallennusta varten
+            Stream stackWriteStream = new FileStream("ComputerStack.dat", FileMode.Create, FileAccess.Write);
+
+            // Luodaan pinot laitteille, ei tarvetta tietää määrää etukäteen
             Stack<Computer> computerStack = new Stack<Computer>();
 
             // Ikuinen silmukka pääohjelman käynnissä pitämiseen
@@ -264,6 +273,7 @@ namespace Laiterekisteri
                         Console.Write("Hankinta hinta: ");
                         string price = Console.ReadLine();
 
+                        // Tehdään tietotyyppimuunnokset virheenkäsittelyrakenteessa
                         try
                         {
                             computer.Price = double.Parse(price);
@@ -329,14 +339,9 @@ namespace Laiterekisteri
                             break;
                         }
 
-                        // Lisätään tietokone vektoriin
-                        computers[numberOfComputers] = computer;
-                        Console.WriteLine("Vektorin indeksi on nyt " + numberOfComputers);
-                        numberOfComputers++;
-                        Console.WriteLine("Nyt syötettiin " + numberOfComputers + ". kone");
-
-                        // Vaihtoehtoisesti lisätään tietokone pinoon
+                        // Lisätään tietokone pinoon
                         computerStack.Push(computer);
+
                         break;
 
                     case "2":
@@ -368,7 +373,7 @@ namespace Laiterekisteri
                         Console.Write("Prosessori tyyppi: ");
                         smartphone.ProcessorType = Console.ReadLine();
                         Console.Write("Muistin määrä (GB): ");
-                        
+
                         break;
 
                     default:
@@ -384,17 +389,37 @@ namespace Laiterekisteri
 
                 if (continueAnswer == "e")
                 {
-                    // Vektorissa on se määrä alkioita, jotka sille on alustuvaiheessa annettu
-                    Console.WriteLine("Tietokonevektorissa on " + computers.Length + " alkiota");
-
+                    // Kerrotaan pinossa olevien olioiden määrä
                     Console.WriteLine("Pinossa on nyt " + computerStack.Count + " tietokonetta");
+
+                    // Tallennetaan koneiden tiedot pinomuodossa tiedostoon
+                    formatter.Serialize(stackWriteStream, computerStack);
+                    stackWriteStream.Close();
+
+                    // Luodaan file stream tiedoston lukua varten
+                    Stream readStackStream = new FileStream("ComputerStack.dat", FileMode.Open, FileAccess.Read);
+
+                    // Määritellään uusi pino luettuja tietoja varten
+                    Stack<Computer> savedStack;
+
+                    // Deserialisoidaan tiedosto pinoon ja suljetaan tiedosto
+                    savedStack = (Stack<Computer>)formatter.Deserialize(readStackStream);
+                    readStackStream.Close();
+
+                    // Pinoon tallennetaan vain todellisuudessa syötetyt koneet, voidaan lukea koko pino silmukassa
+                    foreach (var item in savedStack)
+                    {
+                        Console.WriteLine("Koneen " + item.Identity + " takuu päättyy");
+                        item.CalculateWarrantyEndingDate();
+                    }
+
+                    // Poistutaan ikuisesta silmukasta ja päätetään ohjelma
                     break;
+
                 }
             }
 
-
-
-            // pidetään ikkuna auki
+            // Pidetään ikkuna auki, kunnes käyttäjä painaa <enter>
             Console.ReadLine();
         }
     }
